@@ -17,18 +17,20 @@ int
 main(int argc, char *argv[])
 {
 	int status = 0;
-	int warnplayers = 0;
+	long warnplayers = 1;
+	long critplayers = 4;
 	struct addrinfo hints;
 	struct addrinfo *res;
 	char buf[SOURCEPACKETSIZE];
 
 	// Parse command line args
-	if (argc != 3) {
-		fprintf(stderr, "Invalid number of arguments, expected (host,port)\n");
+	if (argc != 5) {
+		fprintf(stderr, "Invalid number of arguments, expected (host,port,warn,crit)\n");
 		exit(NAGIOSCRIT);
 	}
 
-
+	warnplayers = strtol(argv[3], NULL, 10);
+	critplayers = strtol(argv[4], NULL, 10);
 
 	// Set the properties for the connection to the source server
 	memset(&hints, 0, sizeof hints); // make sure the struct is empty
@@ -101,12 +103,15 @@ main(int argc, char *argv[])
 	// This is the actual playercount figure
 	int players = buf[pos + 3];
 
-	if (players <= warnplayers) {
-		printf("WARN: %d player(s) online\n", players);
-		exit(NAGIOSWARN);
-	} else if (players > warnplayers) {
+	if (players < warnplayers) {
 		printf("OK: %d player(s) online\n", players);
 		exit(NAGIOSOK);
+	} else if (players >= warnplayers && players < critplayers) {
+		printf("WARN: %d player(s) online\n", players);
+		exit(NAGIOSWARN);
+	} else if (players >= critplayers) {
+		printf("CRITICAL: %d player(s) online\n", players);
+		exit(NAGIOSCRIT);
 	}
 
 	close(s);
