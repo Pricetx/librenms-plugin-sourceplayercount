@@ -4,7 +4,7 @@ Nagios plugin to check number of players on a source engine server
 
 ##Use
 
-check_source_playercount <host, port, warn, crit>
+check_source_playercount \<host, port, warn, crit\>
 
 * host: The IP or hostname of the server to check
 * port: The port number of the source engine server
