@@ -10,12 +10,20 @@
 #define NAGIOSOK 0
 #define NAGIOSWARN 1
 #define NAGIOSCRIT 2
+#define NAGIOSUNKNOWN 3
 
 #define SOURCEPACKETSIZE 1400
+
+// The below header is required for Source Engine ServerQuery packets
+const char header[] = { 0xFF, 0xFF, 0xFF, 0xFF, 0x54 };
+
+// This tells the server to respond with A2S_INFO
+const char* msg = "Source Engine Query\0";
 
 int
 main(int argc, char *argv[])
 {
+	int s = 0;
 	int status = 0;
 	long warnplayers = 1;
 	long critplayers = 4;
@@ -44,7 +52,6 @@ main(int argc, char *argv[])
 	}
 
 	// Create the socket
-	int s = 0;
 	if ((s = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) == -1) {
 		fprintf(stderr, "socket error: %s\n", strerror(errno));
 		exit(NAGIOSCRIT);
@@ -55,12 +62,6 @@ main(int argc, char *argv[])
 		fprintf(stderr, "connect error: %s\n", strerror(errno));
 		exit(NAGIOSCRIT);
 	}
-
-	// The below header is required for Source Engine ServerQuery packets
-	char header[] = { 0xFF, 0xFF, 0xFF, 0xFF, 0x54 };
-
-	// This tells the server to respond with A2S_INFO
-	char* msg = "Source Engine Query\0";
 
 	// The full message will be the length of the message + the 5 byte header
 	char* fullmsg = malloc(strlen(msg) + 5);
@@ -78,7 +79,7 @@ main(int argc, char *argv[])
 	}
 
 	// Get the response
-	if ((status = recv(s, buf, 1399, 0)) == -1) {
+	if ((status = recv(s, buf, SOURCEPACKETSIZE, 0)) == -1) {
 		fprintf(stderr, "recv error: %s\n", strerror(errno));
 		exit(NAGIOSCRIT);
 	}
@@ -112,6 +113,9 @@ main(int argc, char *argv[])
 	} else if (players >= critplayers) {
 		printf("CRITICAL: %d player(s) online\n", players);
 		exit(NAGIOSCRIT);
+	} else {
+		fprintf(stderr, "UNKNOWN: An unknown error has occured\n");
+		exit(NAGIOSUNKNOWN);
 	}
 
 	close(s);
