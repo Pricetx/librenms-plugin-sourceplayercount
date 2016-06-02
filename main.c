@@ -30,6 +30,9 @@ main(int argc, char *argv[])
 	struct addrinfo hints;
 	struct addrinfo *res;
 	char buf[SOURCEPACKETSIZE];
+	struct timeval tv;
+	tv.tv_sec = 30;
+
 
 	// Parse command line args
 	if (argc != 5) {
@@ -56,6 +59,9 @@ main(int argc, char *argv[])
 		fprintf(stderr, "socket error: %s\n", strerror(errno));
 		exit(NAGIOSCRIT);
 	}
+
+	// Set the socket timeout
+	setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof(struct timeval));
 
 	// Open a connection to the remote server
 	if ((status = connect(s, res->ai_addr, res->ai_addrlen)) != 0) {
