@@ -111,13 +111,13 @@ main(int argc, char *argv[])
 	int players = buf[pos + 3];
 
 	if (players < warnplayers) {
-		printf("OK: %d player(s) online\n", players);
+		printf("Player Count OK - %d player(s) online|players=%d;%ld;%ld\n", players, players, warnplayers, critplayers);
 		exit(NAGIOSOK);
 	} else if (players >= warnplayers && players < critplayers) {
-		printf("WARN: %d player(s) online\n", players);
+		printf("Player Count WARN - %d player(s) online|players=%d;%ld;%ld\n", players, players, warnplayers, critplayers);
 		exit(NAGIOSWARN);
 	} else if (players >= critplayers) {
-		printf("CRITICAL: %d player(s) online\n", players);
+		printf("Player Count CRITICAL - %d player(s) online|players=%d;%ld;%ld\n", players, players, warnplayers, critplayers);
 		exit(NAGIOSCRIT);
 	} else {
 		fprintf(stderr, "UNKNOWN: An unknown error has occured\n");
