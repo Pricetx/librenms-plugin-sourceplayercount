@@ -25,7 +25,7 @@ define command {
 Finally, add the following service block to your host configuration, and adjust it to your preferences:
 
 ```
-# Check to see number of players on GGO
+# Check to see number of players on the Source server
 define service {
         use                     remote-service
         host_name               server.example.com
