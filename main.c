@@ -35,13 +35,13 @@ main(int argc, char *argv[])
 
 
 	// Parse command line args
-	if (argc != 5) {
-		fprintf(stderr, "Invalid number of arguments, expected (host,port,warn,crit)\n");
+	if (argc != 6) {
+		fprintf(stderr, "Invalid number of arguments, expected (-H host,port,warn,crit)\n");
 		exit(NAGIOSCRIT);
 	}
 
-	warnplayers = strtol(argv[3], NULL, 10);
-	critplayers = strtol(argv[4], NULL, 10);
+	warnplayers = strtol(argv[4], NULL, 10);
+	critplayers = strtol(argv[5], NULL, 10);
 
 	// Set the properties for the connection to the source server
 	memset(&hints, 0, sizeof hints); // make sure the struct is empty
@@ -49,7 +49,7 @@ main(int argc, char *argv[])
 	hints.ai_socktype = SOCK_DGRAM; // Set to UDP
 
 	// Initialise addrinfo
-	if ((status = getaddrinfo(argv[1], argv[2], &hints, &res)) != 0) {
+	if ((status = getaddrinfo(argv[2], argv[3], &hints, &res)) != 0) {
     		fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
     		exit(NAGIOSCRIT);
 	}
